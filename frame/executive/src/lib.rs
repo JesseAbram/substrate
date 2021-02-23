@@ -119,7 +119,7 @@
 use sp_std::{prelude::*, marker::PhantomData};
 use frame_support::{
 	weights::{GetDispatchInfo, DispatchInfo, DispatchClass},
-	traits::{OnInitialize, OnFinalize, OnRuntimeUpgrade, OffchainWorker},
+	traits::{OnInitialize, OnFinalize, OnIdle, OnRuntimeUpgrade, OffchainWorker},
 	dispatch::PostDispatchInfo,
 };
 use sp_runtime::{
@@ -166,6 +166,7 @@ impl<
 	AllModules:
 		OnRuntimeUpgrade +
 		OnInitialize<System::BlockNumber> +
+		// OnIdle<System::BlockNumber> +
 		OnFinalize<System::BlockNumber> +
 		OffchainWorker<System::BlockNumber>,
 	COnRuntimeUpgrade: OnRuntimeUpgrade,
@@ -355,6 +356,10 @@ where
 
 		// post-extrinsics book-keeping
 		<frame_system::Module<System>>::note_finished_extrinsics();
+
+		// <frame_system::Module<System> as OnIdle<System::BlockNumber>>::on_idle(block_number);
+		// <AllModules as OnIdle<System::BlockNumber>>::on_idle(block_number);
+
 		<frame_system::Module<System> as OnFinalize<System::BlockNumber>>::on_finalize(block_number);
 		<AllModules as OnFinalize<System::BlockNumber>>::on_finalize(block_number);
 	}
@@ -366,6 +371,10 @@ where
 		sp_tracing::enter_span!( sp_tracing::Level::TRACE, "finalize_block" );
 		<frame_system::Module<System>>::note_finished_extrinsics();
 		let block_number = <frame_system::Module<System>>::block_number();
+
+		// <frame_system::Module<System> as OnIdle<System::BlockNumber>>::on_idle(block_number);
+		// <AllModules as OnIdle<System::BlockNumber>>::on_idle(block_number);
+
 		<frame_system::Module<System> as OnFinalize<System::BlockNumber>>::on_finalize(block_number);
 		<AllModules as OnFinalize<System::BlockNumber>>::on_finalize(block_number);
 
@@ -567,6 +576,10 @@ mod tests {
 
 				fn on_finalize() {
 					println!("on_finalize(?)");
+				}
+
+				fn on_idle() {
+					println!("on_idle(?)");
 				}
 
 				fn on_runtime_upgrade() -> Weight {

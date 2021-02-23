@@ -1497,6 +1497,14 @@ pub trait OnFinalize<BlockNumber> {
 	/// including inherent extrinsics.
 	fn on_finalize(_n: BlockNumber) {}
 }
+#[impl_for_tuples(30)]
+pub trait OnIdle<BlockNumber> {
+	/// The block is being finalized. Implement to have something happen.
+	///
+	/// NOTE: This function is called AFTER ALL extrinsics in a block are applied,
+	/// including inherent extrinsics.
+	fn on_idle(_n: BlockNumber) {}
+}
 
 /// The block initialization trait.
 ///
@@ -1970,6 +1978,7 @@ pub trait IsSubType<T> {
 pub trait Hooks<BlockNumber> {
 	/// The block is being finalized. Implement to have something happen.
 	fn on_finalize(_n: BlockNumber) {}
+	fn on_idle(_n: BlockNumber) {}
 
 	/// The block is being initialized. Implement to have something happen.
 	///
